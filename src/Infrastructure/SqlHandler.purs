@@ -10,6 +10,7 @@ import Effect.Aff (launchAff)
 import Simple.JSON (read, class ReadForeign)
 import SQLite3 (DBConnection, closeDB, newDB, queryDB, queryObjectDB) as SQ3 
 import Interfaces.Database.SqlHandler as IDS
+import Effect.Aff (Aff)
 
 type DataStoreType =
   {
@@ -20,7 +21,7 @@ newtype DataStore = DataStore DataStoreType
 
 instance sqlHandlerImpl :: 
   ( ReadForeign result
-  ) => IDS.SqlHandler DataStore result
+  ) => IDS.SqlHandler DataStore Aff result
   where
     query queryString params (DataStore ds) = do
       results <- read <$> SQ3.queryObjectDB ds.conn queryString params

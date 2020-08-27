@@ -32,6 +32,8 @@ import Domain.User (User(..))
 import Interfaces.Database.UserRepository as UserRepository
 import Infrastructure.SqlHandler
 
+import Control.Monad.Reader.Trans
+
 middleware :: Middleware
 middleware next = do
   http <- ask
@@ -51,6 +53,7 @@ serverOpts =
 
 main :: Effect Unit
 main = do
+
   -- check DB
   let dbDir = NP.concat [NG.__dirname, "..", "db"]
   let dbFile = NP.concat [dbDir, "db.sqlite3"]

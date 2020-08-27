@@ -6,6 +6,7 @@ module Interfaces.Database.SqlHandler
 
 import Effect (Effect)
 import Effect.Aff (Aff)
+import Effect.Aff.Class (class MonadAff)
 
-class SqlHandler ds result where
-  query :: forall params. String -> Record params -> ds -> Aff (Array result)
+class (MonadAff m) <= SqlHandler ds m result where
+  query :: forall params. String -> Record params -> ds -> m (Array result)

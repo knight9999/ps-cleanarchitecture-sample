@@ -7,6 +7,8 @@ You can edit this file as you like.
   [ "bucketchain"
   , "console"
   , "effect"
+  , "node-fs"
+  , "node-path"
   , "node-process"
   , "node-sqlite3"
   , "psci-support"

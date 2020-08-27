@@ -76,9 +76,7 @@ main = do
   launchAff_ do
     db <- newDB sqlFile
     let ds = DataStore { conn: db }
-    users <- UserRepository.store 
-      (User { id: 100, firstName: "HOGE", lastName: "FOO" }) -- 今は、この情報は使われていない
-      ds
+    users <- UserRepository.find 4 ds
     for_ users \user -> do
       liftEffect $ log $ show user
     pure unit

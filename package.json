@@ -1,0 +1,21 @@
+{
+  "name": "ps-cleanarchitecture-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "spago bundle-app --to dist/index.js",
+    "test": "spago test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "purescript": "^0.13.8",
+    "spago": "^0.16.0"
+  },
+  "dependencies": {
+    "sqlite3": "^5.0.0"
+  }
+}

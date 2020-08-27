@@ -53,12 +53,12 @@ main :: Effect Unit
 main = do
   -- check DB
   let dbDir = NP.concat [NG.__dirname, "..", "db"]
-  let sqlFile = NP.concat [dbDir, "db.sqlite3"]
+  let dbFile = NP.concat [dbDir, "db.sqlite3"]
   isExist <- NFS.exists dbDir
   isReadyDB <- 
     if isExist
     then do
-      isExist' <- NFS.exists sqlFile
+      isExist' <- NFS.exists dbFile
       if isExist'
         then
           pure true
@@ -73,13 +73,15 @@ main = do
       error "No db.sqlite3 file"
       EE.throwException $ EE.error "No db.sqlite3 file"
 
+  -- find DB
   launchAff_ do
-    db <- newDB sqlFile
+    db <- newDB dbFile
     let ds = DataStore { conn: db }
     users <- UserRepository.find 4 ds
     for_ users \user -> do
       liftEffect $ log $ show user
     pure unit
+
   -- start server
   s <- createServer middleware
   listen serverOpts s

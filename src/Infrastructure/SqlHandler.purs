@@ -1,5 +1,7 @@
 module Infrastructure.SqlHandler
-  where
+  ( DataStoreType
+  , DataStore(..)
+  ) where
 
 import Prelude
 import Data.Either (Either(..))

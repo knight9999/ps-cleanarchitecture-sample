@@ -81,9 +81,7 @@ main = do
   -- find DB
   launchAff_ do
     db <- newDB dbFile
-    let ds = DataStore { conn: db }
-    -- let (SqlHandlerImpl (users :: Array User)) = UserRepository.find 4
-    users <- getUsers db
+    users <- getUsers db 5
     for_ users \user -> do
       liftEffect $ log $ show user
     pure unit
@@ -92,7 +90,7 @@ main = do
   s <- createServer middleware
   listen serverOpts s
 
-getUsers :: DBConnection -> Aff (Array User)
-getUsers db = do
-  let (SqlHandlerImpl getters) = UserRepository.find 4
+getUsers :: DBConnection -> Int -> Aff (Array User)
+getUsers db i = do
+  let (SqlHandlerImpl getters) = UserRepository.find i
   runReaderT getters (DataStore { conn: db })

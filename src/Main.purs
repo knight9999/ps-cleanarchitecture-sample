@@ -15,7 +15,7 @@ import Data.Options ((:=))
 import Effect.Exception (error, throwException) as EE
 import Data.Foldable (for_)
 
-import SQLite3 (closeDB, newDB, queryDB, queryObjectDB)
+import SQLite3 (DBConnection, closeDB, newDB, queryDB, queryObjectDB)
 
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
@@ -92,6 +92,7 @@ main = do
   s <- createServer middleware
   listen serverOpts s
 
+getUsers :: DBConnection -> Aff (Array User)
 getUsers db = do
-  let (SqlHandlerImpl (getters :: (ReaderT DataStore Aff) (Array User))) = UserRepository.find 4
+  let (SqlHandlerImpl getters) = UserRepository.find 4
   runReaderT getters (DataStore { conn: db })

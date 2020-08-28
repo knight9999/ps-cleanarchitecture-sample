@@ -33,6 +33,8 @@ import Interfaces.Database.UserRepository as UserRepository
 import Infrastructure.SqlHandler
 
 import Control.Monad.Reader.Trans
+import Effect.Aff (Aff)
+
 
 middleware :: Middleware
 middleware next = do
@@ -80,7 +82,8 @@ main = do
   launchAff_ do
     db <- newDB dbFile
     let ds = DataStore { conn: db }
-    users <- UserRepository.find 4 ds
+    -- let (SqlHandlerImpl (users :: Array User)) = UserRepository.find 4
+    users <- getUsers db
     for_ users \user -> do
       liftEffect $ log $ show user
     pure unit
@@ -89,5 +92,6 @@ main = do
   s <- createServer middleware
   listen serverOpts s
 
-
-
+getUsers db = do
+  let (SqlHandlerImpl (getters :: (ReaderT DataStore Aff) (Array User))) = UserRepository.find 4
+  runReaderT getters (DataStore { conn: db })

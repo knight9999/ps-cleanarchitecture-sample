@@ -8,5 +8,5 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
 
-class (MonadAff m) <= SqlHandler ds m result where
+class SqlHandler ds m result where
   query :: forall params. String -> Record params -> ds -> m (Array result)

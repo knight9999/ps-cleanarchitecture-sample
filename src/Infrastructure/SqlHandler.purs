@@ -1,7 +1,6 @@
 module Infrastructure.SqlHandler
   ( DataStoreType
   , DataStore(..)
-  -- , SqlHandlerImpl(..)
   ) where
 
 import Prelude

@@ -6,6 +6,7 @@ module Infrastructure.SqlHandler
 
 import Prelude
 import Data.Either (Either(..))
+import Type.Proxy
 
 import Effect.Aff (Aff, launchAff)
 import Simple.JSON (read, class ReadForeign)
@@ -25,6 +26,7 @@ instance sqlHandlerImpl ::
   ) => IDS.SqlHandler DataStore result
   where
     query queryString params = (query_ queryString params)
+    execute executeString params = (execute_ executeString params)
 
 query_ :: forall params result. (ReadForeign result) => 
             String -> Record params ->
@@ -38,3 +40,12 @@ query_ queryString params = do
         pure results
       Left e ->
         pure []
+
+execute_ :: forall params result. 
+            String -> Record params ->
+            (ReaderT DataStore Aff (Proxy result))
+execute_ queryString params = do
+  (DataStore ds) <- ask
+  lift do
+    _ <- SQ3.queryObjectDB ds.conn queryString params
+    pure Proxy

@@ -70,6 +70,8 @@ main = do
   launchAff_ do
     db <- newDB dbFile
     let userRepository = UR.mkUserRepository (DataStore { conn: db })
+    _ <- userRepository.insertUser $ User { id: Nothing, firstName: "ok" , lastName: "hoge" }
+
     user <- userRepository.userById 6
     case user of
       Just user' -> liftEffect $ log $ show user'

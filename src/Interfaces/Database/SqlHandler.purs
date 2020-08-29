@@ -2,7 +2,11 @@ module Interfaces.Database.SqlHandler
   (
     class SqlHandler
   , query
+  , execute
   ) where
+
+import Prelude
+import Type.Proxy
 
 import Effect (Effect)
 import Effect.Aff (Aff)
@@ -17,3 +21,4 @@ import Control.Monad.Reader.Trans
 
 class SqlHandler ds result where
   query :: forall params. String -> Record params -> (ReaderT ds Aff) (Array result)
+  execute :: forall params. String -> Record params -> (ReaderT ds Aff) (Proxy result)

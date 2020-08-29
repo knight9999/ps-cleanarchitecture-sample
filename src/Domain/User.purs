@@ -22,10 +22,10 @@ instance showUser :: Show User where
     <> ", firstName: '" <> user.firstName <> "'"
     <> ", lastName: '" <> user.lastName <> "' }"
 
-instance readUser :: ReadForeign User where
-  readImpl text = do
-    (user :: UserType) <- readImpl text
-    pure $ User user
+-- instance readUser :: ReadForeign User where
+--   readImpl text = do
+--     (user :: UserType) <- readImpl text
+--     pure $ User user
 
-instance writeUser :: WriteForeign User where
-  writeImpl (User user) = writeImpl user
+-- instance writeUser :: WriteForeign User where
+--   writeImpl (User user) = writeImpl user

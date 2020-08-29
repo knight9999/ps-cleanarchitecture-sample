@@ -2,36 +2,39 @@ module Interfaces.Database.UserRepository
   ( mkUserRepository
   ) where
 
-import Prelude (Unit, bind, pure, unit, ($))
-import Data.Maybe (Maybe)
+import Prelude
+import Data.Maybe
 import Data.Array ((!!))
 import Effect.Aff (Aff)
 
 import Domain.User (User(..))
-import Interfaces.Database.SqlHandler (SqlHandlerType)
 import Usecase.UserRepository (UserRepositoryType)
+import Interfaces.Database.DUser (DUser (..))
+import Interfaces.Database.SqlHandler (SqlHandlerType)
 
-mkUserRepository :: SqlHandlerType User -> UserRepositoryType
+mkUserRepository :: SqlHandlerType DUser -> UserRepositoryType
 mkUserRepository sqlHandler = {
   userById: \i -> userById sqlHandler i
 , users: users sqlHandler
 , addUser: \user -> addUser sqlHandler user
 }
 
-userById :: (SqlHandlerType User) -> Int -> Aff (Maybe User)
+userById :: (SqlHandlerType DUser) -> Int -> Aff (Maybe User)
 userById sqlHandler id = do
   let queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id;"
       params = { "$id": id }
   results <- sqlHandler.query queryString params 
-  pure $ results !! 0  
+  pure $ case results !! 0 of
+    Just (DUser user) -> Just user
+    Nothing -> Nothing
 
-users :: (SqlHandlerType User) -> Aff (Array User)
-users sqlHandler = sqlHandler.query queryString { }
-  where 
-    queryString = "SELECT id, firstName, lastName FROM users;"
+users :: (SqlHandlerType DUser) -> Aff (Array User)
+users sqlHandler = do
+  let queryString = "SELECT id, firstName, lastName FROM users;"
+  users <- sqlHandler.query queryString { }
+  pure $ ((\(DUser user) -> user) <$> users)
 
-
-addUser :: (SqlHandlerType User) -> User -> Aff Unit
+addUser :: (SqlHandlerType DUser) -> User -> Aff Unit
 addUser sqlHandler (User record) = do
   let queryString = """
 INSERT INTO users 

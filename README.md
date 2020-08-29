@@ -40,18 +40,18 @@ The `db` directory must be same as `dist` diretory.
 ## List All
 
 ```
-curl -i -H 'Content-Type:application/json' localhost:3000/users
+% curl -i -H 'Content-Type:application/json' localhost:3000/users
 ```
 
 ## List Specified
 
 ```
-curl -i -H 'Content-Type:application/json' localhost:3000/users/3
+% curl -i -H 'Content-Type:application/json' localhost:3000/users/3
 ```
 
 ## Add User
 
-$ curl -i -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"firstName": "Susan", "lastName": "Taylor"}' localhost:3000/users
+% curl -i -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"firstName": "Hello", "lastName": "PureScript"}' localhost:3000/users
 
 
 

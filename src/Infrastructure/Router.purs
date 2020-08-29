@@ -28,6 +28,7 @@ import SQLite3 (closeDB, newDB)
 import Infrastructure.SqlHandler as SH
 import Interfaces.Controllers.UserController as ICU
 import Domain.User (User(..))
+import Interfaces.Database.DUser
 
 init :: String -> Effect Unit
 init dbFile = do

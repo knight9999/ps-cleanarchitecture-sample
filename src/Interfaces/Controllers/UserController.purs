@@ -1,28 +1,30 @@
 module Interfaces.Controllers.UserController
   where
 
-import Prelude (Unit, ($))
+import Prelude (Unit, bind, pure, map, (<$>), ($))
 import Effect.Aff (Aff)
 import Data.Maybe (Maybe)
+import Simple.JSON (class ReadForeign, readImpl, class WriteForeign, writeImpl)
 
-import Domain.User (User)
-
-import Interfaces.Database.SqlHandler (SqlHandlerType)
-
-import Interfaces.Database.UserRepository (mkUserRepository)
+import Domain.User (User(..), UserType)
 import Usecase.UserInteractor (mkUserInteractor)
+
+import Interfaces.Controllers.CUser (CUser(..))
+import Interfaces.Database.DUser
+import Interfaces.Database.SqlHandler (SqlHandlerType)
+import Interfaces.Database.UserRepository (mkUserRepository)
 
 type UserControllerType = {
   create :: User -> Aff Unit
-, index :: Aff (Array User)
-, show :: Int -> Aff (Maybe User)
+, index :: Aff (Array CUser)
+, show :: Int -> Aff (Maybe CUser)
 }
 
-mkUserController :: SqlHandlerType User -> UserControllerType
+mkUserController :: SqlHandlerType DUser -> UserControllerType
 mkUserController sqlHandler = {
-  create: \user -> userInteractor.addUser user
-, index: userInteractor.users
-, show: \id -> userInteractor.userById id
+  create: userInteractor.addUser
+, index: map (\user -> CUser user) <$> userInteractor.users
+, show: \id -> map (\user -> CUser user) <$> (userInteractor.userById id)
 } where
   userInteractor = mkUserInteractor $ mkUserRepository sqlHandler
   

@@ -2,10 +2,10 @@ module Interfaces.Controllers.CUser
   ( CUser(..)
   ) where
 
-import Prelude
+import Prelude (class Show, bind, pure, ($), (<>))
 import Simple.JSON (class ReadForeign, readImpl, class WriteForeign, writeImpl)
 import Data.Int (decimal, toStringAs)
-import Data.Maybe (Maybe, fromMaybe)
+import Data.Maybe (fromMaybe)
 
 import Domain.User
 

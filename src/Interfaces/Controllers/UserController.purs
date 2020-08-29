@@ -1,12 +1,11 @@
 module Interfaces.Controllers.UserController
   where
 
-import Prelude (Unit, bind, pure, map, (<$>), ($))
+import Prelude (Unit, map, ($), (<$>))
 import Effect.Aff (Aff)
 import Data.Maybe (Maybe)
-import Simple.JSON (class ReadForeign, readImpl, class WriteForeign, writeImpl)
 
-import Domain.User (User(..), UserType)
+import Domain.User (User)
 import Usecase.UserInteractor (mkUserInteractor)
 
 import Interfaces.Controllers.CUser (CUser(..))

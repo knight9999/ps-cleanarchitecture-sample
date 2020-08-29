@@ -7,7 +7,7 @@ import Effect (Effect)
 import Control.Monad.Reader (ask)
 import Effect.Class (liftEffect)
 import Data.Maybe (Maybe(..))
-import Data.Either
+import Data.Either (Either(..))
 import Data.Int (fromString)
 import Effect.Aff.Class (liftAff)
 import Simple.JSON (readJSON, writeJSON)
@@ -28,7 +28,6 @@ import SQLite3 (closeDB, newDB)
 import Infrastructure.SqlHandler as SH
 import Interfaces.Controllers.UserController as ICU
 import Domain.User (User(..))
-import Interfaces.Database.DUser
 
 init :: String -> Effect Unit
 init dbFile = do

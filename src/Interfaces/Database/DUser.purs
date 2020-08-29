@@ -2,10 +2,10 @@ module Interfaces.Database.DUser
   ( DUser(..)
   ) where
 
-import Prelude
+import Prelude (bind, pure, ($))
 import Simple.JSON (class ReadForeign, readImpl, class WriteForeign, writeImpl)
 
-import Domain.User
+import Domain.User (User(..), UserType)
 
 newtype DUser = DUser User
 

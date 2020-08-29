@@ -2,8 +2,8 @@ module Interfaces.Database.UserRepository
   ( mkUserRepository
   ) where
 
-import Prelude
-import Data.Maybe
+import Prelude (Unit, bind, pure, unit, ($), (<$>))
+import Data.Maybe (Maybe(..))
 import Data.Array ((!!))
 import Effect.Aff (Aff)
 
@@ -31,8 +31,8 @@ userById sqlHandler id = do
 users :: (SqlHandlerType DUser) -> Aff (Array User)
 users sqlHandler = do
   let queryString = "SELECT id, firstName, lastName FROM users;"
-  users <- sqlHandler.query queryString { }
-  pure $ ((\(DUser user) -> user) <$> users)
+  users' <- sqlHandler.query queryString { }
+  pure $ ((\(DUser user) -> user) <$> users')
 
 addUser :: (SqlHandlerType DUser) -> User -> Aff Unit
 addUser sqlHandler (User record) = do

@@ -4,15 +4,15 @@ module Infrastructure.SqlHandler
   , module IDS
   ) where
 
-import Prelude
+import Prelude (bind, pure, (<$>))
 import Data.Either (Either(..))
-import Type.Proxy
-
-import Effect.Aff (Aff, launchAff)
+import Type.Proxy (Proxy(..))
+import Effect.Aff (Aff)
 import Simple.JSON (read, class ReadForeign)
-import SQLite3 (DBConnection, closeDB, newDB, queryDB, queryObjectDB) as SQ3 
-import Interfaces.Database.SqlHandler as IDS
-import Control.Monad.Reader.Trans
+import SQLite3 (DBConnection, queryObjectDB) as SQ3
+
+import Interfaces.Database.SqlHandler (class SqlHandler, SqlHandlerType, execute, mkSqlHandler, query) as IDS
+import Control.Monad.Reader.Trans (ReaderT, ask, lift)
 
 type DataStoreType =
   {
@@ -36,8 +36,8 @@ query_ queryString params = do
   lift do
     results <- read <$> SQ3.queryObjectDB ds.conn queryString params
     case results of
-      Right (results :: Array result) ->
-        pure results
+      Right (results' :: Array result) ->
+        pure results'
       Left e ->
         pure []
 

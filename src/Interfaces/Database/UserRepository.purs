@@ -44,18 +44,3 @@ INSERT INTO users
   _ <- sqlHandler.execute queryString params 
   pure unit
 
-
--- mkUserRepository :: forall ds. (SqlHandler ds User) => ds -> UserRepositoryType
--- mkUserRepository ds = {
---   userById: \i -> runReaderT (userById i) ds
--- , users: runReaderT users ds
--- , addUser: \user -> runReaderT (addUser user) ds
--- }
-
--- userById :: forall ds.  
---           (SqlHandler ds User) => Int -> (ReaderT ds Aff) (Maybe User)
--- userById id = do
---   let queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id;"
---       params = { "$id": id }
---   results <- query queryString params 
---   pure $ results !! 0  

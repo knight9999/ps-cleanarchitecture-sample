@@ -3,10 +3,10 @@ module Domain.User
   , User(..)
   ) where
 
-import Prelude
-import Simple.JSON (read, class ReadForeign, readImpl, class WriteForeign, writeImpl)
+import Prelude (class Show, bind, pure, ($), (<>))
+import Simple.JSON (class ReadForeign, readImpl, class WriteForeign, writeImpl)
 import Data.Int (decimal, toStringAs)
-import Data.Maybe
+import Data.Maybe (Maybe, fromMaybe)
 
 type UserType =
   { id :: Maybe Int

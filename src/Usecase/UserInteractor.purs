@@ -4,12 +4,12 @@ module Usecase.UserInteractor
   , mkUserInteractor
   ) where
 
-import Prelude
+import Prelude (Unit)
 import Data.Maybe (Maybe)
 import Effect.Aff (Aff)
 
 import Domain.User (User)
-import Usecase.UserRepository
+import Usecase.UserRepository (UserRepositoryType)
 
 type UserInteractorType = {
   userById :: Int -> Aff (Maybe User)

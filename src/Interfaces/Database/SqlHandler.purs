@@ -7,15 +7,9 @@ module Interfaces.Database.SqlHandler
   , mkSqlHandler
   ) where
 
-import Prelude
-import Type.Proxy
-
-import Effect (Effect)
+import Type.Proxy (Proxy)
 import Effect.Aff (Aff)
-import Effect.Aff.Class (class MonadAff)
-
-import Control.Monad
-import Control.Monad.Reader.Trans
+import Control.Monad.Reader.Trans (ReaderT, runReaderT)
 
 type SqlHandlerType result = {
   query :: forall params. String -> Record params -> Aff (Array result)

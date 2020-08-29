@@ -36,3 +36,10 @@ curl -i -H 'Content-Type:application/json' localhost:3000/users/3
 $ curl -i -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"firstName": "Susan", "lastName": "Taylor"}' localhost:3000/users
 
 
+
+# References
+
+Clean Architecture Sample (Go Lang)
+https://qiita.com/hirotakan/items/698c1f5773a3cca6193e
+
+

@@ -2,37 +2,32 @@ module Infrastructure.Router
   ( init
   ) where
 
-import Prelude
+import Prelude (Unit, bind, discard, join, pure, ($), (&&), (<$>), (<<<), (<>), (==))
 import Effect (Effect)
-import Effect.Console (log, error)
 import Control.Monad.Reader (ask)
 import Effect.Class (liftEffect)
-import Data.Maybe 
+import Data.Maybe (Maybe(..))
 import Data.Either
-import Data.Int
-import Effect.Aff (launchAff_)
+import Data.Int (fromString)
 import Effect.Aff.Class (liftAff)
-import Data.Foldable (for_)
-import Simple.JSON
+import Simple.JSON (readJSON, writeJSON)
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags (noFlags)
 import Data.Array.NonEmpty as NonEmptyArray
-import Record.Builder
-import Foreign.Object
+import Record.Builder (build, merge)
+import Foreign.Object (lookup)
 import Foreign (MultipleErrors)
 
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.Http (requestMethod, requestURL, requestBody, setStatusCode, setHeader, requestHeaders)
-import Bucketchain.ResponseBody (body, fromReadable)
-import Node.HTTP (ListenOptions, Server)
-import SQLite3 (DBConnection, closeDB, newDB, queryDB, queryObjectDB)
+import Bucketchain.ResponseBody (body)
+import Node.HTTP (ListenOptions)
+import SQLite3 (closeDB, newDB)
 
 import Infrastructure.SqlHandler as SH
 import Interfaces.Controllers.UserController as ICU
-import Domain.User
-
-
+import Domain.User (User(..))
 
 init :: String -> Effect Unit
 init dbFile = do

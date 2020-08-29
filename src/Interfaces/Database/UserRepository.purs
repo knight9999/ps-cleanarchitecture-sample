@@ -2,17 +2,12 @@ module Interfaces.Database.UserRepository
   ( mkUserRepository
   ) where
 
-import Prelude
+import Prelude (Unit, bind, pure, unit, ($))
 import Data.Maybe (Maybe)
-import Data.Array
+import Data.Array ((!!))
+import Effect.Aff (Aff)
 
-import Control.Monad
-import Control.Monad.Reader.Trans
-import Effect.Aff (Aff, launchAff)
-
-import Interfaces.Database.SqlHandler
 import Domain.User (User(..))
-
 import Interfaces.Database.SqlHandler (SqlHandlerType)
 import Usecase.UserRepository (UserRepositoryType)
 

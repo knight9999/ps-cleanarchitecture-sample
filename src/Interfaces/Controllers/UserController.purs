@@ -1,16 +1,16 @@
 module Interfaces.Controllers.UserController
   where
 
-import Prelude
+import Prelude (Unit, ($))
 import Effect.Aff (Aff)
-import Data.Maybe
+import Data.Maybe (Maybe)
 
-import Domain.User
+import Domain.User (User)
 
-import Interfaces.Database.SqlHandler
+import Interfaces.Database.SqlHandler (SqlHandlerType)
 
-import Interfaces.Database.UserRepository
-import Usecase.UserInteractor
+import Interfaces.Database.UserRepository (mkUserRepository)
+import Usecase.UserInteractor (mkUserInteractor)
 
 type UserControllerType = {
   create :: User -> Aff Unit

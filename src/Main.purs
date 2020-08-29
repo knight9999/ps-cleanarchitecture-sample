@@ -1,53 +1,16 @@
 module Main where
 
-import Prelude
+import Prelude (Unit, bind, discard, pure, unit, ($))
 
 import Effect (Effect)
-import Effect.Console (log, error)
-import Effect.Aff (launchAff_)
-import Effect.Class (liftEffect)
-import Control.Monad.Error.Class (throwError)
-import Control.Monad.Reader (ask)
-import Data.Maybe (Maybe(..))
-import Data.Either
-import Data.Options ((:=))
+import Effect.Console (error)
 import Effect.Exception (error, throwException) as EE
-import Data.Foldable (for_)
 
-import SQLite3 (DBConnection, closeDB, newDB, queryDB, queryObjectDB)
-
-import Bucketchain (createServer, listen)
-import Bucketchain.Middleware (Middleware)
-import Bucketchain.Http (requestMethod, requestURL, requestBody, setStatusCode, setHeader)
-import Bucketchain.ResponseBody (body, fromReadable)
-
-import Node.HTTP (ListenOptions, Server)
-import Node.HTTP.Client as C
 import Node.Globals as NG
 import Node.Path as NP
 import Node.FS.Sync as NFS
 
-import Control.Monad.Reader.Trans
-import Effect.Aff (Aff)
-
-
-import Domain.User (User(..))
-import Interfaces.Database.UserRepository as UR
-import Infrastructure.SqlHandler as SH
-
 import Infrastructure.Router as Router
-
--- middleware :: Middleware
--- middleware next = do
---   http <- ask
---   if requestMethod http == "GET" && requestURL http == "/test"
---     then liftEffect do
---       setStatusCode http 200
---       setHeader http "Content-Type" "text/plain; charset=utf-8"
---       Just <$> body "Hello PureScript :)"
---     else next
-
-
 
 main :: Effect Unit
 main = do
@@ -63,28 +26,3 @@ main = do
       EE.throwException $ EE.error "No db.sqlite3 file"
 
   Router.init dbFile
-
-  -- -- find DB
-  -- launchAff_ do
-  --   db <- newDB dbFile
-  --   let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
-  --   let userRepository = UR.mkUserRepository sqlHandler
-  --   _ <- userRepository.addUser $ User { id: Nothing, firstName: "ok" , lastName: "hoge" }
-
-  --   user <- userRepository.userById 6
-  --   case user of
-  --     Just user' -> liftEffect $ log $ show user'
-  --     Nothing -> liftEffect $ log "Nothing"
-    
-  --   users <- userRepository.users
-  --   for_ users \user -> do
-  --     liftEffect $ log $ show user
-
-  --   closeDB db
-  --   pure unit
-
-  --   liftEffect do
-  --     Router.init dbFile
-      -- start server
-      -- s <- createServer middleware
-      -- listen serverOpts s

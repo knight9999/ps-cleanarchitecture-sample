@@ -4,19 +4,24 @@
 % npm install
 % npx spago install
 % npm run build
-% npm run server
 ```
 
 
+# Start Application
 
-
-# Create Database
+## Create Database
 
 ```
 % sqlite3 db/db.sqlite3 < sql/make_db.sql
 ```
 
+The `db` directory must be same as `dist` diretory.
 
+## Start App
+
+```
+% npm run server
+```
 
 
 # Supplement (Initial Settings)

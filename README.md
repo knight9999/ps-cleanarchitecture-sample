@@ -1,3 +1,13 @@
+# How to Install
+
+```
+% npm install
+% npx spago install
+% npm run build
+% npm run server
+```
+
+
 
 
 # Create Database
@@ -5,6 +15,9 @@
 ```
 % sqlite3 db/db.sqlite3 < sql/make_db.sql
 ```
+
+
+
 
 # Supplement (Initial Settings)
 

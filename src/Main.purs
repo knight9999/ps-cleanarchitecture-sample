@@ -62,27 +62,29 @@ main = do
       error "No db.sqlite3 file"
       EE.throwException $ EE.error "No db.sqlite3 file"
 
-  -- find DB
-  launchAff_ do
-    db <- newDB dbFile
-    let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
-    let userRepository = UR.mkUserRepository sqlHandler
-    _ <- userRepository.addUser $ User { id: Nothing, firstName: "ok" , lastName: "hoge" }
+  Router.init dbFile
 
-    user <- userRepository.userById 6
-    case user of
-      Just user' -> liftEffect $ log $ show user'
-      Nothing -> liftEffect $ log "Nothing"
+  -- -- find DB
+  -- launchAff_ do
+  --   db <- newDB dbFile
+  --   let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
+  --   let userRepository = UR.mkUserRepository sqlHandler
+  --   _ <- userRepository.addUser $ User { id: Nothing, firstName: "ok" , lastName: "hoge" }
+
+  --   user <- userRepository.userById 6
+  --   case user of
+  --     Just user' -> liftEffect $ log $ show user'
+  --     Nothing -> liftEffect $ log "Nothing"
     
-    users <- userRepository.users
-    for_ users \user -> do
-      liftEffect $ log $ show user
+  --   users <- userRepository.users
+  --   for_ users \user -> do
+  --     liftEffect $ log $ show user
 
-    closeDB db
-    pure unit
+  --   closeDB db
+  --   pure unit
 
-    liftEffect do
-      Router.init dbFile
+  --   liftEffect do
+  --     Router.init dbFile
       -- start server
       -- s <- createServer middleware
       -- listen serverOpts s

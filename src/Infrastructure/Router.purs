@@ -8,20 +8,31 @@ import Effect.Console (log, error)
 import Control.Monad.Reader (ask)
 import Effect.Class (liftEffect)
 import Data.Maybe 
+import Data.Either
+import Data.Int
 import Effect.Aff (launchAff_)
 import Effect.Aff.Class (liftAff)
 import Data.Foldable (for_)
 import Simple.JSON
+import Data.String.Regex as Regex
+import Data.String.Regex.Flags (noFlags)
+import Data.Array.NonEmpty as NonEmptyArray
+import Record.Builder
+import Foreign.Object
+import Foreign (MultipleErrors)
 
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
-import Bucketchain.Http (requestMethod, requestURL, requestBody, setStatusCode, setHeader)
+import Bucketchain.Http (requestMethod, requestURL, requestBody, setStatusCode, setHeader, requestHeaders)
 import Bucketchain.ResponseBody (body, fromReadable)
 import Node.HTTP (ListenOptions, Server)
 import SQLite3 (DBConnection, closeDB, newDB, queryDB, queryObjectDB)
 
 import Infrastructure.SqlHandler as SH
 import Interfaces.Controllers.UserController as ICU
+import Domain.User
+
+
 
 init :: String -> Effect Unit
 init dbFile = do
@@ -57,21 +68,55 @@ getUsers dbFile next = do
 getUser :: String -> Middleware
 getUser dbFile next = do
   http <- ask
-  if requestMethod http == "GET" && requestURL http == "/user/:id"
-    then liftEffect do
-      setStatusCode http 200
-      setHeader http "Content-Type" "text/plain; charset=utf-8"
-      Just <$> body ""
+  if requestMethod http == "GET"
+    then case (Regex.regex "^/users/(\\d+)$" noFlags) of
+      Left error -> next
+      Right regex ->
+        case Regex.match regex (requestURL http) of
+          Just list -> do
+            case join $ fromString <$> (join $ (NonEmptyArray.index) list 1) of
+              Just userid -> do
+                user_ <- liftAff do
+                  db <- newDB dbFile
+                  let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
+                  let userController = ICU.mkUserController sqlHandler
+                  user <- userController.show userid
+                  closeDB db
+                  pure user
+                case user_ of
+                  Just user -> liftEffect do
+                    let resBody = writeJSON user
+                    setStatusCode http 200
+                    setHeader http "Content-Type" "text/plain; charset=utf-8"
+                    Just <$> body (resBody <> "\n")
+                  Nothing -> (error404 next)
+              Nothing -> next
+          Nothing -> next
     else next
 
 postUsers :: String -> Middleware
 postUsers dbFile next = do
   http <- ask
   if requestMethod http == "POST" && requestURL http == "/users"
-    then liftEffect do
-      setStatusCode http 200
-      setHeader http "Content-Type" "text/json; charset=utf-8"
-      Just <$> body "{ \"result\" : \"ok\" }"
+    then do
+      result <- liftAff do
+        reqBody <- requestBody http
+        case (readJSON reqBody :: Either MultipleErrors { firstName :: String, lastName :: String }) of
+          Left error -> pure $ Left "ERROR"
+          Right obj -> do
+            db <- newDB dbFile
+            let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
+            let userController = ICU.mkUserController sqlHandler
+            let obj' = build (merge { id: Nothing :: Maybe Int }) obj
+            userController.create (User obj')
+            closeDB db
+            pure $ Right "OK"
+      case result of
+        Left _ -> (error404 next)
+        Right _ -> liftEffect do
+          setStatusCode http 200
+          setHeader http "Content-Type" "text/json; charset=utf-8"
+          Just <$> body "{ \"result\" : \"ok\" }"
     else next
 
 welcome :: Middleware
@@ -87,11 +132,16 @@ welcome next = do
 error404 :: Middleware
 error404 next = do
   http <- ask
-  liftEffect do
-    setStatusCode http 404
-    setHeader http "Content-Type" "text/plain; charset=utf-8"
-    Just <$> body "Sorry, that page is not found"
-
+  let obj = requestHeaders http
+  case lookup "content-type" obj of 
+    Just contentType -> liftEffect do
+        setStatusCode http 404
+        setHeader http "Content-Type" "application/json; charset=utf-8"
+        Just <$> body (writeJSON { "result" : "Not Found" } <> "\n")
+    Nothing -> liftEffect do
+        setStatusCode http 404
+        setHeader http "Content-Type" "text/plain; charset=utf-8"
+        Just <$> body ("Sorry!!, that page is not found\n")
 
 serverOpts :: ListenOptions
 serverOpts =

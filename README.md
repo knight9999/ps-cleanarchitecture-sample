@@ -25,5 +25,14 @@
 curl -i -H 'Content-Type:application/json' localhost:3000/users
 ```
 
+## List Specified
+
+```
+curl -i -H 'Content-Type:application/json' localhost:3000/users/3
+```
+
+## Add User
+
+$ curl -i -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"firstName": "Susan", "lastName": "Taylor"}' localhost:3000/users
 
 

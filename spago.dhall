@@ -12,6 +12,7 @@ You can edit this file as you like.
   , "node-process"
   , "node-sqlite3"
   , "psci-support"
+  , "record"
   , "simple-json"
   ]
 , packages = ./packages.dhall

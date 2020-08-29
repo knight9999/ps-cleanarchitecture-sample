@@ -57,21 +57,9 @@ main :: Effect Unit
 main = do
 
   -- check DB
-  let dbDir = NP.concat [NG.__dirname, "..", "db"]
-  let dbFile = NP.concat [dbDir, "db.sqlite3"]
-  isExist <- NFS.exists dbDir
-  isReadyDB <- 
-    if isExist
-    then do
-      isExist' <- NFS.exists dbFile
-      if isExist'
-        then
-          pure true
-        else
-          pure false
-    else
-      pure false
-  if isReadyDB 
+  let dbFile = NP.concat [NG.__dirname, "..", "db", "db.sqlite3"]
+  isExist <- NFS.exists dbFile
+  if isExist
     then 
       pure unit
     else do
@@ -82,9 +70,15 @@ main = do
   launchAff_ do
     db <- newDB dbFile
     let userRepository = UR.mkUserRepository (DataStore { conn: db })
-    users <- userRepository.findUserById 6
+    user <- userRepository.userById 6
+    case user of
+      Just user' -> liftEffect $ log $ show user'
+      Nothing -> liftEffect $ log "Nothing"
+    
+    users <- userRepository.users
     for_ users \user -> do
       liftEffect $ log $ show user
+
     pure unit
 
   -- start server

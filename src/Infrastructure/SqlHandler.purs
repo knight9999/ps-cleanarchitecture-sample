@@ -20,15 +20,6 @@ type DataStoreType =
 
 newtype DataStore = DataStore DataStoreType
 
--- type SqlHandlerImplType = ReaderT DataStore Aff
--- newtype SqlHandlerImpl results = SqlHandlerImpl (ReaderT DataStore Aff results)
-
--- derive newtype instance functorSqlHandlerImpl :: Functor SqlHandlerImpl
--- derive newtype instance applySqlHandlerImpl :: Apply SqlHandlerImpl
--- derive newtype instance applicativeSqlHandlerImpl :: Applicative SqlHandlerImpl
--- derive newtype instance bindSqlHandlerImpl :: Bind SqlHandlerImpl
--- derive newtype instance monadSqlHandlerImpl :: Monad SqlHandlerImpl
-
 instance sqlHandlerImpl :: 
   ( ReadForeign result
   ) => IDS.SqlHandler DataStore result

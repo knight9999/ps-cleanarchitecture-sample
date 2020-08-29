@@ -1,8 +1,11 @@
 module Interfaces.Database.UserRepository
   ( mkUserRepository
-  , findUserById
   , findById
   ) where
+
+import Prelude
+import Data.Maybe
+import Data.Array
 
 import Control.Monad
 import Control.Monad.Reader.Trans
@@ -12,23 +15,35 @@ import Interfaces.Database.SqlHandler
 import Domain.User (User)
 
 type UserRepositoryType = {
-  findUserById :: Int -> Aff (Array User)
+  userById :: Int -> Aff (Maybe User)
+, users :: Aff (Array User)
 }
 
 mkUserRepository :: forall ds. (SqlHandler ds User) => ds -> UserRepositoryType
 mkUserRepository ds = {
-  findUserById: \i -> runReaderT (findUserById i) ds
+  userById: \i -> runReaderT (userById i) ds
+, users: runReaderT (users) ds
 }
 
-findUserById :: forall ds.
-          (SqlHandler ds User) => Int -> (ReaderT ds Aff) (Array User)
-findUserById id = findById id
+userById :: forall ds.
+          (SqlHandler ds User) => Int -> (ReaderT ds Aff) (Maybe User)
+userById id = findById id
+
+users :: forall ds.
+          (SqlHandler ds User) => (ReaderT ds Aff) (Array User)
+users = findAll
 
 
 findById :: forall ds result.  
-          (SqlHandler ds result) => Int -> (ReaderT ds Aff) (Array result)
-findById id = query queryString params
+          (SqlHandler ds result) => Int -> (ReaderT ds Aff) (Maybe result)
+findById id = do
+  let queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id"
+      params = { "$id": id }
+  results <- query queryString params :: (ReaderT ds Aff) (Array result)
+  pure $ results !! 0  
+
+findAll :: forall ds result.  
+          (SqlHandler ds result) => (ReaderT ds Aff) (Array result)
+findAll = query queryString { }
   where 
-    queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id"
-    params = { "$id": id }
-  
+    queryString = "SELECT id, firstName, lastName FROM users"

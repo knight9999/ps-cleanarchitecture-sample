@@ -9,5 +9,5 @@
 /.psa*
 /.spago
 /dist
-/sql/*
+/db/*
 !.gitkeep

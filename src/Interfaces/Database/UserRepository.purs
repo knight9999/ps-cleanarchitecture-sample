@@ -4,7 +4,7 @@ module Interfaces.Database.UserRepository
   ) where
 
 import Prelude
-import Data.Maybe
+import Data.Maybe (Maybe)
 import Data.Array
 
 import Control.Monad
@@ -14,10 +14,8 @@ import Effect.Aff (Aff, launchAff)
 import Interfaces.Database.SqlHandler
 import Domain.User (User)
 
-type UserRepositoryType = {
-  userById :: Int -> Aff (Maybe User)
-, users :: Aff (Array User)
-}
+import Usecase.UserRepository (UserRepositoryType)
+
 
 mkUserRepository :: forall ds. (SqlHandler ds User) => ds -> UserRepositoryType
 mkUserRepository ds = {

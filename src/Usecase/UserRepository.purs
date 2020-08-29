@@ -11,7 +11,7 @@ import Domain.User (User)
 type UserRepositoryType = {
   userById :: Int -> Aff (Maybe User)
 , users :: Aff (Array User)
-, insertUser :: User -> Aff Unit
+, addUser :: User -> Aff Unit
 }
 
 

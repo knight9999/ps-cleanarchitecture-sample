@@ -20,7 +20,7 @@ mkUserRepository :: forall ds. (SqlHandler ds User) => ds -> UserRepositoryType
 mkUserRepository ds = {
   userById: \i -> runReaderT (userById i) ds
 , users: runReaderT users ds
-, insertUser: \user -> runReaderT (insertUser user) ds
+, addUser: \user -> runReaderT (addUser user) ds
 }
 
 userById :: forall ds.  
@@ -38,9 +38,9 @@ users = query queryString { }
     queryString = "SELECT id, firstName, lastName FROM users;"
 
 
-insertUser :: forall ds.
+addUser :: forall ds.
           (SqlHandler ds User) => User -> (ReaderT ds Aff) Unit
-insertUser (User record) = do
+addUser (User record) = do
   let queryString = """
 INSERT INTO users 
  ( firstName, lastName )

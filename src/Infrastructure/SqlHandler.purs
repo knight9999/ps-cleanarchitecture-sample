@@ -1,7 +1,7 @@
 module Infrastructure.SqlHandler
   ( DataStoreType
   , DataStore(..)
-  , SqlHandlerImpl(..)
+  -- , SqlHandlerImpl(..)
   ) where
 
 import Prelude
@@ -21,20 +21,19 @@ type DataStoreType =
 newtype DataStore = DataStore DataStoreType
 
 -- type SqlHandlerImplType = ReaderT DataStore Aff
-newtype SqlHandlerImpl results = SqlHandlerImpl (ReaderT DataStore Aff results)
+-- newtype SqlHandlerImpl results = SqlHandlerImpl (ReaderT DataStore Aff results)
 
-derive newtype instance functorSqlHandlerImpl :: Functor SqlHandlerImpl
-derive newtype instance applySqlHandlerImpl :: Apply SqlHandlerImpl
-derive newtype instance applicativeSqlHandlerImpl :: Applicative SqlHandlerImpl
-derive newtype instance bindSqlHandlerImpl :: Bind SqlHandlerImpl
-derive newtype instance monadSqlHandlerImpl :: Monad SqlHandlerImpl
--- derive newtype instance affSqlHandlerImpl :: Aff SqlHandlerImpl
+-- derive newtype instance functorSqlHandlerImpl :: Functor SqlHandlerImpl
+-- derive newtype instance applySqlHandlerImpl :: Apply SqlHandlerImpl
+-- derive newtype instance applicativeSqlHandlerImpl :: Applicative SqlHandlerImpl
+-- derive newtype instance bindSqlHandlerImpl :: Bind SqlHandlerImpl
+-- derive newtype instance monadSqlHandlerImpl :: Monad SqlHandlerImpl
 
 instance sqlHandlerImpl :: 
   ( ReadForeign result
-  ) => IDS.SqlHandler SqlHandlerImpl result
+  ) => IDS.SqlHandler DataStore result
   where
-    query queryString params = SqlHandlerImpl (query_ queryString params)
+    query queryString params = (query_ queryString params)
 
 query_ :: forall params result. (ReadForeign result) => 
             String -> Record params ->

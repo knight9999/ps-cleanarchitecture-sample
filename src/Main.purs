@@ -92,5 +92,5 @@ main = do
 
 getUsers :: DBConnection -> Int -> Aff (Array User)
 getUsers db i = do
-  let (SqlHandlerImpl getters) = UserRepository.findUserById i
+  let getters = UserRepository.findUserById i
   runReaderT getters (DataStore { conn: db })

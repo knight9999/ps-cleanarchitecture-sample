@@ -9,11 +9,11 @@ import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
 
 import Control.Monad
+import Control.Monad.Reader.Trans
 
--- class SqlHandler ds m result where
---   query :: forall params. String -> Record params -> ds -> m (Array result)
+-- class (Monad repr) <= SqlHandler repr result where
+--   query :: forall params. String -> Record params -> repr (Array result)
 
-class (Monad repr) <= SqlHandler repr result where
-  query :: forall params. String -> Record params -> repr (Array result)
 
--- repr means ReaderT ds (m (Array result))
+class SqlHandler ds result where
+  query :: forall params. String -> Record params -> (ReaderT ds Aff) (Array result)

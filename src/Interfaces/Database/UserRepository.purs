@@ -46,7 +46,7 @@ INSERT INTO users
 """
       params = { "$firstName": record.firstName
                , "$lastName": record.lastName }
-  _ <- sqlHandler.query queryString params 
+  _ <- sqlHandler.execute queryString params 
   pure unit
 
 

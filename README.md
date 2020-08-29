@@ -19,7 +19,11 @@
 
 # Test Curl Command
 
+## List All
+
+```
 curl -i -H 'Content-Type:application/json' localhost:3000/users
+```
 
 
 

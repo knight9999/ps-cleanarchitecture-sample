@@ -78,9 +78,11 @@ main = do
     for_ users \user -> do
       liftEffect $ log $ show user
 
+    closeDB db
     pure unit
 
-  -- start server
-  Router.init 
-  -- s <- createServer middleware
-  -- listen serverOpts s
+    liftEffect do
+      Router.init dbFile
+      -- start server
+      -- s <- createServer middleware
+      -- listen serverOpts s

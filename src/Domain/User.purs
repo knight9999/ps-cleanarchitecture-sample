@@ -4,7 +4,7 @@ module Domain.User
   ) where
 
 import Prelude
-import Simple.JSON (read, class ReadForeign, readImpl)
+import Simple.JSON (read, class ReadForeign, readImpl, class WriteForeign, writeImpl)
 import Data.Int (decimal, toStringAs)
 import Data.Maybe
 
@@ -27,3 +27,5 @@ instance readUser :: ReadForeign User where
     (user :: UserType) <- readImpl text
     pure $ User user
 
+instance writeUser :: WriteForeign User where
+  writeImpl (User user) = writeImpl user

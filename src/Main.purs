@@ -28,30 +28,27 @@ import Node.Globals as NG
 import Node.Path as NP
 import Node.FS.Sync as NFS
 
-import Domain.User (User(..))
-import Interfaces.Database.UserRepository as UR
-import Infrastructure.SqlHandler
-
 import Control.Monad.Reader.Trans
 import Effect.Aff (Aff)
 
 
-middleware :: Middleware
-middleware next = do
-  http <- ask
-  if requestMethod http == "GET" && requestURL http == "/test"
-    then liftEffect do
-      setStatusCode http 200
-      setHeader http "Content-Type" "text/plain; charset=utf-8"
-      Just <$> body "Hello PureScript :)"
-    else next
+import Domain.User (User(..))
+import Interfaces.Database.UserRepository as UR
+import Infrastructure.SqlHandler as SH
 
-serverOpts :: ListenOptions
-serverOpts =
-  { hostname: "localhost"
-  , port: 3000
-  , backlog: Nothing
-  }
+import Infrastructure.Router as Router
+
+-- middleware :: Middleware
+-- middleware next = do
+--   http <- ask
+--   if requestMethod http == "GET" && requestURL http == "/test"
+--     then liftEffect do
+--       setStatusCode http 200
+--       setHeader http "Content-Type" "text/plain; charset=utf-8"
+--       Just <$> body "Hello PureScript :)"
+--     else next
+
+
 
 main :: Effect Unit
 main = do
@@ -69,7 +66,8 @@ main = do
   -- find DB
   launchAff_ do
     db <- newDB dbFile
-    let userRepository = UR.mkUserRepository (DataStore { conn: db })
+    let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
+    let userRepository = UR.mkUserRepository sqlHandler
     _ <- userRepository.addUser $ User { id: Nothing, firstName: "ok" , lastName: "hoge" }
 
     user <- userRepository.userById 6
@@ -84,5 +82,6 @@ main = do
     pure unit
 
   -- start server
-  s <- createServer middleware
-  listen serverOpts s
+  Router.init 
+  -- s <- createServer middleware
+  -- listen serverOpts s

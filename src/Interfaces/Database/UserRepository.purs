@@ -13,34 +13,34 @@ import Effect.Aff (Aff, launchAff)
 import Interfaces.Database.SqlHandler
 import Domain.User (User(..))
 
+import Interfaces.Database.SqlHandler (SqlHandlerType)
 import Usecase.UserRepository (UserRepositoryType)
 
-
-mkUserRepository :: forall ds. (SqlHandler ds User) => ds -> UserRepositoryType
-mkUserRepository ds = {
-  userById: \i -> runReaderT (userById i) ds
-, users: runReaderT users ds
-, addUser: \user -> runReaderT (addUser user) ds
+mkUserRepository :: forall ds. SqlHandlerType ds User -> UserRepositoryType
+mkUserRepository sqlHandler = {
+  userById: \i -> userById sqlHandler i
+, users: users sqlHandler
+, addUser: \user -> addUser sqlHandler user
 }
 
 userById :: forall ds.  
-          (SqlHandler ds User) => Int -> (ReaderT ds Aff) (Maybe User)
-userById id = do
+          (SqlHandlerType ds User) -> Int -> Aff (Maybe User)
+userById sqlHandler id = do
   let queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id;"
       params = { "$id": id }
-  results <- query queryString params :: (ReaderT ds Aff) (Array User)
+  results <- sqlHandler.query queryString params 
   pure $ results !! 0  
 
 users :: forall ds.  
-          (SqlHandler ds User) => (ReaderT ds Aff) (Array User)
-users = query queryString { }
+          (SqlHandlerType ds User) -> Aff (Array User)
+users sqlHandler = sqlHandler.query queryString { }
   where 
     queryString = "SELECT id, firstName, lastName FROM users;"
 
 
 addUser :: forall ds.
-          (SqlHandler ds User) => User -> (ReaderT ds Aff) Unit
-addUser (User record) = do
+          (SqlHandlerType ds User) -> User -> Aff Unit
+addUser sqlHandler (User record) = do
   let queryString = """
 INSERT INTO users 
  ( firstName, lastName )
@@ -49,5 +49,21 @@ INSERT INTO users
 """
       params = { "$firstName": record.firstName
                , "$lastName": record.lastName }
-  _ <- query queryString params :: (ReaderT ds Aff) (Array User)
+  _ <- sqlHandler.query queryString params 
   pure unit
+
+
+-- mkUserRepository :: forall ds. (SqlHandler ds User) => ds -> UserRepositoryType
+-- mkUserRepository ds = {
+--   userById: \i -> runReaderT (userById i) ds
+-- , users: runReaderT users ds
+-- , addUser: \user -> runReaderT (addUser user) ds
+-- }
+
+-- userById :: forall ds.  
+--           (SqlHandler ds User) => Int -> (ReaderT ds Aff) (Maybe User)
+-- userById id = do
+--   let queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id;"
+--       params = { "$id": id }
+--   results <- query queryString params 
+--   pure $ results !! 0  

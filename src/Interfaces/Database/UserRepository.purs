@@ -16,30 +16,27 @@ import Domain.User (User(..))
 import Interfaces.Database.SqlHandler (SqlHandlerType)
 import Usecase.UserRepository (UserRepositoryType)
 
-mkUserRepository :: forall ds. SqlHandlerType ds User -> UserRepositoryType
+mkUserRepository :: SqlHandlerType User -> UserRepositoryType
 mkUserRepository sqlHandler = {
   userById: \i -> userById sqlHandler i
 , users: users sqlHandler
 , addUser: \user -> addUser sqlHandler user
 }
 
-userById :: forall ds.  
-          (SqlHandlerType ds User) -> Int -> Aff (Maybe User)
+userById :: (SqlHandlerType User) -> Int -> Aff (Maybe User)
 userById sqlHandler id = do
   let queryString = "SELECT id, firstName, lastName FROM users WHERE id = $id;"
       params = { "$id": id }
   results <- sqlHandler.query queryString params 
   pure $ results !! 0  
 
-users :: forall ds.  
-          (SqlHandlerType ds User) -> Aff (Array User)
+users :: (SqlHandlerType User) -> Aff (Array User)
 users sqlHandler = sqlHandler.query queryString { }
   where 
     queryString = "SELECT id, firstName, lastName FROM users;"
 
 
-addUser :: forall ds.
-          (SqlHandlerType ds User) -> User -> Aff Unit
+addUser :: (SqlHandlerType User) -> User -> Aff Unit
 addUser sqlHandler (User record) = do
   let queryString = """
 INSERT INTO users 

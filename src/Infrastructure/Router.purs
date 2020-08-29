@@ -8,6 +8,7 @@ import Effect.Console (log, error)
 import Control.Monad.Reader (ask)
 import Effect.Class (liftEffect)
 import Data.Maybe (Maybe(..))
+import Effect.Aff (launchAff_)
 
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
@@ -29,9 +30,9 @@ getUsers next = do
   http <- ask
   if requestMethod http == "GET" && requestURL http == "/users"
     then liftEffect do
-      setStatusCode http 200
-      setHeader http "Content-Type" "text/json; charset=utf-8"
-      Just <$> body "{ \"result\" : \"ok\" }\n"
+        setStatusCode http 200
+        setHeader http "Content-Type" "text/json; charset=utf-8"
+        Just <$> body "{ \"result\" : \"ok\" }\n"
     else next
 
 getUser :: Middleware

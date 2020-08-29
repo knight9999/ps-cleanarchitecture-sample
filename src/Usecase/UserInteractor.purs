@@ -1,5 +1,8 @@
 module Usecase.UserInteractor
-  where
+  (
+    UserInteractorType
+  , mkUserInteractor
+  ) where
 
 import Prelude
 import Data.Maybe (Maybe)

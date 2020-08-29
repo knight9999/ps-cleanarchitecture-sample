@@ -5,7 +5,6 @@ import Prelude
 import Effect (Effect)
 import Effect.Console (log, error)
 import Effect.Aff (launchAff_)
-import Effect.Aff.Class (liftAff)
 import Effect.Class (liftEffect)
 import Control.Monad.Error.Class (throwError)
 import Control.Monad.Reader (ask)

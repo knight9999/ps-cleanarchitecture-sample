@@ -29,7 +29,7 @@ import Node.Path as NP
 import Node.FS.Sync as NFS
 
 import Domain.User (User(..))
-import Interfaces.Database.UserRepository as UserRepository
+import Interfaces.Database.UserRepository as UR
 import Infrastructure.SqlHandler
 
 import Control.Monad.Reader.Trans
@@ -81,7 +81,8 @@ main = do
   -- find DB
   launchAff_ do
     db <- newDB dbFile
-    users <- getUsers db 5
+    let userRepository = UR.mkUserRepository (DataStore { conn: db })
+    users <- userRepository.findUserById 6
     for_ users \user -> do
       liftEffect $ log $ show user
     pure unit
@@ -89,8 +90,3 @@ main = do
   -- start server
   s <- createServer middleware
   listen serverOpts s
-
-getUsers :: DBConnection -> Int -> Aff (Array User)
-getUsers db i = do
-  let getters = UserRepository.findUserById i
-  runReaderT getters (DataStore { conn: db })

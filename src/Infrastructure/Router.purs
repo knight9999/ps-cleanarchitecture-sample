@@ -4,19 +4,20 @@ module Infrastructure.Router
 
 import Prelude (Unit, bind, discard, join, pure, ($), (&&), (<$>), (<<<), (<>), (==))
 import Effect (Effect)
+import Effect.Console (log)
 import Control.Monad.Reader (ask)
 import Effect.Class (liftEffect)
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
 import Data.Int (fromString)
 import Effect.Aff.Class (liftAff)
-import Simple.JSON (readJSON, writeJSON)
+import Simple.JSON (readJSON, writeJSON, read, E)
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags (noFlags)
 import Data.Array.NonEmpty as NonEmptyArray
 import Record.Builder (build, merge)
 import Foreign.Object (lookup)
-import Foreign (MultipleErrors)
+import Foreign (Foreign, MultipleErrors, unsafeToForeign)
 
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
@@ -27,7 +28,8 @@ import SQLite3 (closeDB, newDB)
 
 import Infrastructure.SqlHandler as SH
 import Interfaces.Controllers.UserController as ICU
-import Domain.User (User(..))
+
+import Interfaces.Controllers.CUser as CUser
 
 init :: String -> Effect Unit
 init dbFile = do
@@ -102,16 +104,15 @@ postUsers dbFile next = do
             db <- newDB dbFile
             let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
             let userController = ICU.mkUserController sqlHandler
-            let obj' = build (merge { id: Nothing :: Maybe Int }) obj
-            userController.create (User obj')
+            userController.create (CUser.fromObj obj)
             closeDB db
             pure $ Right "OK"
       case result of
-        Left _ -> (error404 next)
+        Left _ -> (error503 next)
         Right _ -> liftEffect do
           setStatusCode http 200
           setHeader http "Content-Type" "text/json; charset=utf-8"
-          Just <$> body "{ \"result\" : \"ok\" }"
+          Just <$> body (writeJSON { "result" : "ok" } <> "\n")
     else next
 
 welcome :: Middleware
@@ -137,6 +138,21 @@ error404 next = do
         setStatusCode http 404
         setHeader http "Content-Type" "text/plain; charset=utf-8"
         Just <$> body ("Sorry!!, that page is not found\n")
+
+error503 :: Middleware
+error503 next = do
+  http <- ask
+  let obj = requestHeaders http
+  case lookup "content-type" obj of 
+    Just contentType -> liftEffect do
+        setStatusCode http 503
+        setHeader http "Content-Type" "application/json; charset=utf-8"
+        Just <$> body (writeJSON { "result" : "Internal Error" } <> "\n")
+    Nothing -> liftEffect do
+        setStatusCode http 503
+        setHeader http "Content-Type" "text/plain; charset=utf-8"
+        Just <$> body ("Sorry!!, Internal Error happens\n")
+
 
 serverOpts :: ListenOptions
 serverOpts =

@@ -1,11 +1,10 @@
 module Interfaces.Controllers.UserController
   where
 
-import Prelude (Unit, map, ($), (<$>), (<<<))
+import Prelude (Unit, map, ($), (<$>))
 import Effect.Aff (Aff)
 import Data.Maybe (Maybe)
 
-import Domain.User (User)
 import Usecase.UserInteractor (mkUserInteractor)
 
 import Interfaces.Controllers.CUser (CUser(..))

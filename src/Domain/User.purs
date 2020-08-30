@@ -1,15 +1,9 @@
 module Domain.User
-  ( UnregisteredUserType
-  , UserType
+  ( UserType
   , User(..)
   ) where
 
 import Data.Maybe (Maybe)
-
-type UnregisteredUserType =
-  { firstName :: String
-  , lastName :: String
-  }
 
 type UserType =
   { id :: Maybe Int

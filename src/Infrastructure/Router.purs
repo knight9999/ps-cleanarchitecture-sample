@@ -4,20 +4,18 @@ module Infrastructure.Router
 
 import Prelude (Unit, bind, discard, join, pure, ($), (&&), (<$>), (<<<), (<>), (==))
 import Effect (Effect)
-import Effect.Console (log)
 import Control.Monad.Reader (ask)
 import Effect.Class (liftEffect)
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
 import Data.Int (fromString)
 import Effect.Aff.Class (liftAff)
-import Simple.JSON (readJSON, writeJSON, read, E)
+import Simple.JSON (readJSON, writeJSON)
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags (noFlags)
 import Data.Array.NonEmpty as NonEmptyArray
-import Record.Builder (build, merge)
 import Foreign.Object (lookup)
-import Foreign (Foreign, MultipleErrors, unsafeToForeign)
+import Foreign (MultipleErrors)
 
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)

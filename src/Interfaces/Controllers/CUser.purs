@@ -6,18 +6,17 @@ module Interfaces.Controllers.CUser
 import Prelude (class Show, bind, pure, ($), (<>))
 import Simple.JSON (class ReadForeign, readImpl, class WriteForeign, writeImpl)
 import Data.Int (decimal, toStringAs)
-import Data.Maybe
-import Foreign
+import Data.Maybe (Maybe(..), fromMaybe)
 import Record.Builder (build, merge)
-import Control.Monad.Except
-import Effect.Exception
-import Data.Function
 
-import Domain.User
+import Domain.User (User(..), UserType)
+
+type InputUserType =
+  { firstName :: String
+  , lastName :: String
+  }
 
 newtype CUser = CUser User
-
--- newtype CUser' = CUser' CUser
 
 instance readCUser :: ReadForeign CUser where
   readImpl text = do
@@ -34,7 +33,7 @@ instance showCUser :: Show CUser where
     <> ", lastName: '" <> user.lastName <> "' }"
 
 
-fromObj :: UnregisteredUserType -> CUser
+fromObj :: InputUserType -> CUser
 fromObj obj = do
   let obj' = build (merge { id: Nothing :: Maybe Int }) obj
   CUser (User obj')

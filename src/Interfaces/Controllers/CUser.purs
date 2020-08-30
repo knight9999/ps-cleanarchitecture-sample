@@ -1,6 +1,6 @@
 module Interfaces.Controllers.CUser
   ( CUser(..)
-  , fromObj
+  , fromInputRecord
   ) where
 
 import Prelude (class Show, bind, pure, ($), (<>))
@@ -33,7 +33,7 @@ instance showCUser :: Show CUser where
     <> ", lastName: '" <> user.lastName <> "' }"
 
 
-fromObj :: InputUserType -> CUser
-fromObj obj = do
+fromInputRecord :: InputUserType -> CUser
+fromInputRecord obj = do
   let obj' = build (merge { id: Nothing :: Maybe Int }) obj
   CUser (User obj')

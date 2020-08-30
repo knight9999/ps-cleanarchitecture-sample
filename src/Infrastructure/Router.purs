@@ -102,7 +102,7 @@ postUsers dbFile next = do
             db <- newDB dbFile
             let sqlHandler = SH.mkSqlHandler (SH.DataStore { conn: db })
             let userController = ICU.mkUserController sqlHandler
-            userController.create (CUser.fromObj obj)
+            userController.create (CUser.fromInputRecord obj)
             closeDB db
             pure $ Right "OK"
       case result of
